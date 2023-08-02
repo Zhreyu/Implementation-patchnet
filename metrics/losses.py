@@ -67,12 +67,12 @@ class AdMSoftmaxLoss(nn.Module):
             x shape (N, in_features)
             labels shape (N)
         '''
-        # assert len(x) == len(labels)
+        assert len(x) == len(labels)
         assert torch.min(labels) >= 0
         assert torch.max(labels) < self.out_features
         
         for W in self.fc.parameters():
-            W = F.normalize(W, dim=1)
+            W = F.normalize(W , dim=1)
 
         x = F.normalize(x, dim=1)
 
@@ -90,12 +90,15 @@ class AdMSoftmaxLoss(nn.Module):
 
 class PatchLoss(nn.Module):
 
-    def __init__(self, alpha1=1.0, alpha2=1.0):
+    def __init__(self, alpha1=1.0, alpha2=1.0,s=30.0,m_l=0.4,m_s=0.1):
         super().__init__()
         self.alpha1 = alpha1
         self.alpha2 = alpha2
         self.sim_loss = SimilarityLoss()
-        self.amsm_loss = AdMSoftmaxLoss(1024, 2)
+        self.amsm_loss = AdMSoftmaxLoss(512,2)
+        self.s= s
+        self.m_l = m_l
+        self.m_s = m_s
 
     
     def forward(self, x1, x2, label):

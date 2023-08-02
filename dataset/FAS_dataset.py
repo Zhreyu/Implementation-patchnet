@@ -21,8 +21,8 @@ class FASDataset(Dataset):
             self.label_weight = 0.99
 
     def __getitem__(self, index):
-        img_name = self.data.iloc[index, 0]
-        label = self.data.iloc[index, 1]
+        img_name = self.data.iloc[index, 1]
+        label = self.data.iloc[index, 2]
         img_name = os.path.join(self.root_dir, "images", img_name)
         
         img = Image.open(img_name)
