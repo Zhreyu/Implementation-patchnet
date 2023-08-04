@@ -1,0 +1,8 @@
+images/*
+*.pyc
+*.pyo
+dataset/raw/*
+raw/*
+client/*
+LCCFASD/*
+*.pth
