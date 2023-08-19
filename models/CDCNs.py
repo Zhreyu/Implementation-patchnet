@@ -16,6 +16,7 @@ class Conv2d_cd(nn.Module):
         super(Conv2d_cd, self).__init__() 
         self.conv = nn.Conv2d(in_channels, out_channels, kernel_size=kernel_size, stride=stride, padding=padding, dilation=dilation, groups=groups, bias=bias)
         self.theta = theta
+        
 
     def forward(self, x):
         out_normal = self.conv(x)
@@ -54,7 +55,8 @@ class CDCN(nn.Module):
     def __init__(self, basic_conv=Conv2d_cd, theta=0.7):   
         super(CDCN, self).__init__()
         
-        
+        self.pos_prototype = nn.Parameter(torch.rand(160, 10))  # Assuming 10 prototypes for simplicity
+        self.neg_prototype = nn.Parameter(torch.rand(160, 10))
         self.conv1 = nn.Sequential(
             basic_conv(3, 64, kernel_size=3, stride=1, padding=1, bias=False, theta= theta),
             nn.BatchNorm2d(64),
@@ -120,6 +122,8 @@ class CDCN(nn.Module):
         
         
         self.downsample32x32 = nn.Upsample(size=(32, 32), mode='bilinear')
+        self.pos_prototype = nn.Parameter(torch.rand(128, 10))  # Assuming 10 prototypes for simplicity
+        self.neg_prototype = nn.Parameter(torch.rand(128, 10))
 
  
     def forward(self, x):	    	# x [3, 256, 256]
@@ -146,7 +150,7 @@ class CDCN(nn.Module):
         
         map_x = x.squeeze(1)
         
-        return map_x, x_concat, x_Block1, x_Block2, x_Block3, x_input
+        return map_x, x_concat, x_Block1, x_Block2, x_Block3, x_input,self.pos_prototype, self.neg_prototype
 
 
 class CDCNpp(nn.Module):
@@ -251,7 +255,7 @@ class CDCNpp(nn.Module):
         
         map_x = map_x.squeeze(1)
         
-        return map_x, x_concat, attention1, attention2, attention3, x_input
+        return map_x, x_concat, attention1, attention2, attention3, x_input, self.pos_prototype, self.neg_prototype
 		
   
 class FeatureExtractor(nn.Module):
